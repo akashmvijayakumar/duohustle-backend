@@ -10,34 +10,23 @@ app.post("/chat", async (req, res) => {
   const userMsg = req.body.message;
 
   try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [
-          {
-            role: "system",
-            content: "You are Duohustle AI assistant helping users and guiding them to WhatsApp 9074221883."
-          },
-          {
-            role: "user",
-            content: userMsg
-          }
-        ]
+        model: "gpt-4.1-mini",
+        input: `You are a Duohustle AI assistant. Help users and guide them to WhatsApp 9074221883.\nUser: ${userMsg}`
       })
     });
 
     const data = await response.json();
 
-    if (!data.choices) {
-      return res.json({ reply: "API error, check key." });
-    }
+    const reply = data.output?.[0]?.content?.[0]?.text || "Error getting response";
 
-    res.json({ reply: data.choices[0].message.content });
+    res.json({ reply });
 
   } catch (err) {
     res.json({ reply: "Server error" });
