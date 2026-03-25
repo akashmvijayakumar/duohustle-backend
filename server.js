@@ -13,35 +13,20 @@ app.post("/chat", async (req, res) => {
     const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
         model: "gpt-4.1-mini",
-        input: [
-          {
-            role: "system",
-            content: "You are a Duohustle AI assistant helping users and guiding them to WhatsApp 9074221883."
-          },
-          {
-            role: "user",
-            content: userMsg
-          }
-        ]
+        input: `You are Duohustle AI assistant. Help users and guide them to WhatsApp 9074221883.\nUser: ${userMsg}`
       })
     });
 
     const data = await response.json();
 
-    // 🔥 FIXED RESPONSE PARSING
-    let reply = "No response";
+    console.log("OPENAI RESPONSE:", JSON.stringify(data, null, 2)); // DEBUG
 
-    if (data.output && data.output.length > 0) {
-      const content = data.output[0].content;
-      if (content && content.length > 0) {
-        reply = content[0].text;
-      }
-    }
+    let reply = data.output_text || "No response";
 
     res.json({ reply });
 
