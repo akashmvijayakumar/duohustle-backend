@@ -18,17 +18,35 @@ app.post("/chat", async (req, res) => {
       },
       body: JSON.stringify({
         model: "gpt-4.1-mini",
-        input: `You are a Duohustle AI assistant. Help users and guide them to WhatsApp 9074221883.\nUser: ${userMsg}`
+        input: [
+          {
+            role: "system",
+            content: "You are a Duohustle AI assistant helping users and guiding them to WhatsApp 9074221883."
+          },
+          {
+            role: "user",
+            content: userMsg
+          }
+        ]
       })
     });
 
     const data = await response.json();
 
-    const reply = data.output?.[0]?.content?.[0]?.text || "Error getting response";
+    // 🔥 FIXED RESPONSE PARSING
+    let reply = "No response";
+
+    if (data.output && data.output.length > 0) {
+      const content = data.output[0].content;
+      if (content && content.length > 0) {
+        reply = content[0].text;
+      }
+    }
 
     res.json({ reply });
 
   } catch (err) {
+    console.error(err);
     res.json({ reply: "Server error" });
   }
 });
