@@ -1,9 +1,6 @@
-import express from "express";
-import cors from "cors";
-import fetch from "node-fetch";
-import dotenv from "dotenv";
-
-dotenv.config();
+const express = require("express");
+const cors = require("cors");
+require("dotenv").config();
 
 const app = express();
 app.use(cors());
@@ -24,7 +21,7 @@ app.post("/chat", async (req, res) => {
         messages: [
           {
             role: "system",
-            content: "You are Duohustle AI assistant. Help users and guide them to WhatsApp 9074221883."
+            content: "You are Duohustle AI assistant helping users and guiding them to WhatsApp 9074221883."
           },
           {
             role: "user",
@@ -35,6 +32,11 @@ app.post("/chat", async (req, res) => {
     });
 
     const data = await response.json();
+
+    if (!data.choices) {
+      return res.json({ reply: "API error, check key." });
+    }
+
     res.json({ reply: data.choices[0].message.content });
 
   } catch (err) {
@@ -42,4 +44,4 @@ app.post("/chat", async (req, res) => {
   }
 });
 
-app.listen(3000, () => console.log("🚀 Server running on port 3000"));
+app.listen(3000, () => console.log("Server running"));
